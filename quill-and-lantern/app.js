@@ -240,7 +240,7 @@ function renderShelf(){const list=[...notebook.docs.values()].filter(d=>isMeanin
 $('#draftList').addEventListener('click',e=>{const b=e.target.closest('[data-doc]');if(b){notebook.open(b.dataset.doc);location.hash='workshop'}});
 function signIn(sendAfter=false){
   if(!classConnected){
-    dialog('<div class="kicker">Practice journal</div><h2 class="dialog-title">Class sign-in is coming</h2><p class="dialog-desc">You can build a paragraph now. Keep this tab open to keep your writing. Sending it to your teacher or the projector will open when class sign-in is connected.</p><div class="dialog-actions"><button class="primary" id="backToJournal">Back to my journal</button></div>');
+    dialog('<div class="kicker">Practice journal</div><h2 class="dialog-title">Open your class journal</h2><p class="dialog-desc">Your practice paragraph stays in this tab. Open the classroom in a new tab to sign in, send writing to your teacher, and share it on the projector.</p><div class="dialog-actions"><button class="outline" id="backToJournal">Keep practicing</button><a class="primary" href="https://quill-and-lantern.vercel.app/?login=1" target="_blank" rel="noopener">Class sign-in</a></div>');
     $('#backToJournal').onclick=closeDialog;
     return;
   }

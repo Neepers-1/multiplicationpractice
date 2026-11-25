@@ -1,6 +1,18 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>
+if (location.hostname === 'neepers-1.github.io') {
+  const query = new URLSearchParams(location.search);
+  if (query.get('practice') !== '1') {
+    const classroom = new URL('https://quill-and-lantern.vercel.app/');
+    if (query.get('login') === '1') classroom.searchParams.set('login', '1');
+    if (['/teacher', '/observer'].includes(query.get('next'))) classroom.searchParams.set('next', query.get('next'));
+    classroom.hash = location.hash;
+    location.replace(classroom.href);
+  }
+}
+</script>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#263f37"><meta name="description" content="Build a narrative paragraph with sensory details, thoughts, and feelings in a hundred imaginative scenes.">
 <title>Writing Workshop · Quill &amp; Lantern</title>
