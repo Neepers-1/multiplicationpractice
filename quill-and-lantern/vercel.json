@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    {"source": "/api/:route*", "destination": "/api/classroom?quillRoute=:route*"}
+  ],
+  "headers": [
+    {"source": "/api/:route*", "headers": [{"key":"Cache-Control","value":"private, no-store"}]}
+  ],
+  "cleanUrls": false
+}

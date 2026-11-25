@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#283e34"><meta name="robots" content="noindex,nofollow"><title>Teacher's notebook · Quill &amp; Lantern</title><link rel="icon" href="./favicon.svg"><link rel="stylesheet" href="./teacher.css"><link rel="stylesheet" href="./motion.css"></head>
+<body><a href="#main" class="skip">Skip to teacher's notebook</a>
+<header class="mast"><div class="wrap mast-inner"><a href="./" class="brand"><span id="brandmark" aria-hidden="true"></span>Quill <i>&amp;</i> Lantern</a><nav aria-label="Main navigation"><a href="./#workshop">Workshop</a><a href="./#my-writing">My writing</a><a href="./teacher.html" aria-current="page">Teacher</a><a href="./observer.html">Story wall</a></nav></div></header>
+<main id="main" class="wrap">
+<header class="intro"><div class="intro-icon" id="lantern"></div><div><p class="overline">Grade 5A</p><h1>Teacher’s notebook</h1></div></header>
+<section id="gate" class="box" role="status">Opening the teacher’s notebook…</section>
+<div id="privateNotebook" hidden>
+<section id="inbox" class="inbox section" hidden aria-labelledby="inbox-title">
+<div class="inbox-head"><div><p class="overline">Correspondence</p><h2 id="inbox-title">Teacher inbox</h2></div><button class="outline" data-refresh>Refresh inbox</button></div>
+<div class="inbox-tabs" role="group" aria-label="Submission group"><button data-view="class" aria-pressed="true">Class submissions</button><button data-view="practice" aria-pressed="false">Practice submissions</button></div>
+<div class="inbox-stack" data-letters></div><p class="small" role="status"></p><button class="outline" data-more hidden>Earlier submissions</button></section>
+<form id="filters" class="filters box"><label>Writing period<select name="range"><option value="">All time</option><option value="week">This week</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option></select></label><label>Writer<select name="student"><option value="">All writers</option></select></label><label>Genre<select name="genre"><option value="">All genres</option><option>Scary</option><option>Silly</option><option>Fantasy</option><option>Gross</option></select></label><label>Paragraph status<select name="status"><option value="">All statuses</option><option value="draft">In progress</option><option value="finished">Finished</option></select></label><button type="reset" class="quiet">Reset filters</button></form>
+<p class="filter-note">The writing period uses each paragraph’s last edit in Bangkok time. Counts include the full history of the selected paragraphs.</p>
+<div class="tools"><nav class="jump" aria-label="Notebook sections"><a href="#inbox">Inbox</a><a href="#overview">Overview</a><a href="#writers">Writers</a><a href="#craft">Writing choices</a><a href="#activity">Activity</a><a href="#writing">Paragraphs</a></nav><button id="download" class="outline">Export CSV</button></div>
+<p id="selection" class="sr-only" aria-live="polite"></p>
+<section id="overview" aria-label="Class overview"></section>
+<section id="writers" class="section"></section>
+<section id="craft" class="section"></section>
+<section id="activity" class="section"></section>
+<section id="writing" class="section"></section>
+</div></main>
+<dialog id="reading" aria-labelledby="readingTitle"><header><div><p class="overline" id="readingBy"></p><h2 id="readingTitle"></h2></div><button id="closeReading" class="outline" aria-label="Close paragraph">Close</button></header><div id="readingBody"></div></dialog>
+<script type="module" src="./teacher.js"></script></body></html>

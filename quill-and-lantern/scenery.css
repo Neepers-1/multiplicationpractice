@@ -1,0 +1,131 @@
+.scene-card-art { position:relative; display:block; isolation:isolate; overflow:hidden; }
+.sc-stage {
+  position:absolute; inset:0; overflow:hidden; contain:paint;
+  pointer-events:none; user-select:none; opacity:0; transition:opacity .55s ease-out;
+}
+.sc-stage.sc-visible {opacity:1}
+.sc-plate {
+  position:absolute; inset:-3%; background-position:center; background-size:cover;
+  animation:sc-camera 20s ease-in-out infinite alternate;
+}
+@keyframes sc-camera {from{transform:translate(-.6%,.6%) scale(1.015)}to{transform:translate(.8%,-.4%) scale(1.055)}}
+.has-living-scene .hero-art { overflow:hidden; }
+.has-living-scene .hero-shade {
+  background:linear-gradient(90deg,rgba(17,32,27,.95),rgba(18,31,25,.80) 42%,rgba(18,30,26,.51) 65%,rgba(16,26,25,.05) 86%),linear-gradient(0deg,#10241f45,transparent 45%);
+}
+.book-spread .has-living-scene .hero-body { max-width:77%; }
+.sc-actor {
+  position:absolute; bottom:5%; right:2%; width:32%; height:64%;
+  transform-origin:50% 95%; filter:drop-shadow(1px 3px 3px #10231c87);
+  animation:sc-drift 5s ease-in-out infinite; animation-delay:var(--behind,0s);
+}
+.sc-subject {display:block; width:100%; height:100%; object-fit:contain; object-position:center bottom;}
+.sc-mini .sc-actor {width:43%; height:82%; right:4%}
+.sc-mini .sc-subject {filter:drop-shadow(0 2px 1px #17261c40)}
+.sc-mini .sc-plate {filter:saturate(.93)}
+.sc-resting *, .sc-resting *::before, .sc-resting *::after {animation-play-state:paused!important;}
+@media(max-width:475px){.book-spread .has-living-scene .hero-body{max-width:88%}.sc-actor{width:32%;height:51%;right:0}.has-living-scene .hero-shade{background:linear-gradient(90deg,#15251cec 4%,#182519ba 62%,#172d2250 87%)}}
+
+/* The branch remains attached to the tree outside the bedroom. The two
+   staggered taps have a quiet pause between them. */
+.sc-actor-scratch,.sc-mini .sc-actor-scratch {width:29%;height:66%;right:1%;top:-3%;bottom:auto;transform-origin:88% 3%; animation:sc-scratch 6.1s ease-in-out infinite;filter:brightness(.67) saturate(.72) drop-shadow(0 2px 1px #23332277)}
+.sc-actor-scratch img {object-position:right top}
+@keyframes sc-scratch {0%,23%,65%,100%{transform:rotate(4deg) translate(0,0)}32%{transform:rotate(-8deg) translate(-.5%,2%)}38%{transform:rotate(-5deg) translate(-.4%,1%)}45%{transform:rotate(-10deg) translate(-1%,3%)}55%{transform:rotate(1deg)}}
+.sc-actor-swing,.sc-actor-chime,.sc-actor-unwind {transform-origin:50% 0%; top:-2%;bottom:auto;height:76%;animation:sc-swing 4.2s ease-in-out infinite}
+.sc-actor-chime{height:63%;top:10%;animation:sc-chime 5.5s ease-in-out infinite}
+.sc-actor-unwind{animation-duration:6s;top:9%;height:63%}
+@keyframes sc-swing{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(10deg)}}
+@keyframes sc-chime{0%,26%,100%{transform:rotate(0)}36%{transform:rotate(15deg)}48%{transform:rotate(-11deg)}60%{transform:rotate(6deg)}70%{transform:rotate(-3deg)}}
+@keyframes sc-drift{0%,100%{transform:translate(0,-1%) rotate(-3deg)}50%{transform:translate(-3%,-9%) rotate(4deg)}}
+.sc-actor-bob,.sc-actor-float,.sc-actor-cloud{animation:sc-bob 7s ease-in-out infinite;bottom:9%}
+.sc-actor-cloud{bottom:28%;animation-duration:10s}
+@keyframes sc-bob{0%,100%{transform:translate(2%,2%) rotate(-3deg)}46%{transform:translate(-8%,-8%) rotate(3deg)}74%{transform:translate(-5%,-2%) rotate(1deg)}}
+.sc-actor-breathe,.sc-actor-swell,.sc-actor-chorus,.sc-actor-listen {animation:sc-breathe 4.9s ease-in-out infinite}
+.sc-actor-swell{animation-duration:3.6s}
+.sc-actor-chorus{right:calc(1% + var(--i)*11%);bottom:calc(2% + var(--i)*8%);width:calc(20% - var(--i)*2%);height:calc(44% - var(--i)*3%);animation-duration:3.1s;animation-delay:var(--behind)}
+.sc-actor-listen{animation:sc-listen 6.8s ease-in-out infinite;transform-origin:98% 50%}
+@keyframes sc-breathe{0%,100%{transform:scale(.97,.94)}55%{transform:scale(1.055,1.09)}}
+@keyframes sc-listen{0%,100%{transform:perspective(600px) rotateY(-8deg)}50%{transform:perspective(600px) rotateY(-28deg) translateX(-2%)}}
+.sc-actor-knock,.sc-actor-quiver,.sc-actor-ring,.sc-actor-shake,.sc-actor-twitch,.sc-actor-talk,.sc-actor-giggle{animation:sc-quiver 4.8s ease-in-out infinite}
+.sc-actor-ring{animation-duration:3.4s}.sc-actor-shake{animation-duration:5.8s}.sc-actor-talk{animation-duration:3s}
+@keyframes sc-quiver{0%,37%,64%,100%{transform:rotate(0)}41%{transform:translateY(-2%) rotate(3deg)}46%{transform:rotate(-4deg)}51%{transform:translateY(-1.5%) rotate(3deg)}57%{transform:rotate(-1.7deg)}}
+.sc-actor-sneeze,.sc-actor-hiccup,.sc-actor-squirt,.sc-actor-boom,.sc-actor-clap {animation:sc-hiccup 5s ease-in-out infinite}
+@keyframes sc-hiccup{0%,38%,69%,100%{transform:scale(1) translateY(0)}47%{transform:scale(1.04,.95) translateY(1%)}52%{transform:scale(.96,1.07) translateY(-7%) rotate(-3deg)}60%{transform:scale(1.02,.99)}}
+.sc-actor-open,.sc-actor-turn,.sc-actor-invert,.sc-actor-beckon {animation:sc-turn 7s ease-in-out infinite}
+.sc-actor-beckon{opacity:.79; transform-origin:65% 100%}
+.sc-actor-invert{animation:sc-invert 9s ease-in-out infinite}
+@keyframes sc-turn{0%,100%{transform:perspective(500px) rotateY(-11deg) rotate(-2deg)}52%{transform:perspective(500px) rotateY(13deg) rotate(2deg)}}
+@keyframes sc-invert{0%,16%,100%{transform:rotate(-3deg) translateY(0)}52%,62%{transform:translateY(-5%) rotate(14deg)}}
+.sc-actor-step,.sc-actor-tap,.sc-actor-hop,.sc-actor-bound,.sc-actor-salute,.sc-actor-sprint,.sc-actor-giggle{animation:sc-hop 4s ease-in-out infinite}
+.sc-actor-tap,.sc-actor-sprint{animation-duration:2.7s}.sc-actor-bound{animation:sc-bound 6.5s ease-in-out infinite}
+@keyframes sc-hop{0%,25%,65%,100%{transform:translate(0,0) rotate(0)}37%{transform:translate(0,-7%) rotate(-4deg)}45%{transform:translate(2%,0) rotate(2deg)}53%{transform:translate(1%,-3%) rotate(-2deg)}}
+@keyframes sc-bound{0%,100%{transform:translate(-18%,2%) rotate(-4deg)}46%{transform:translate(-4%,-13%) rotate(-6deg)}76%{transform:translate(5%,4%) rotate(3deg)}}
+.sc-actor-tilt,.sc-actor-bow,.sc-actor-stir,.sc-actor-thread,.sc-actor-unlock,.sc-actor-scribble,.sc-actor-curl{animation:sc-tilt 5s ease-in-out infinite}
+.sc-actor-thread,.sc-actor-scribble{animation:sc-scribble 4s ease-in-out infinite}
+@keyframes sc-tilt{0%,100%{transform:rotate(-4deg)}53%{transform:rotate(6deg) translate(1%,-1%)}}
+@keyframes sc-scribble{0%,100%{transform:translate(0%,0%) rotate(-4deg)}22%{transform:translate(-10%,-1%) rotate(3deg)}35%{transform:translate(-7%,-6%) rotate(1deg)}46%{transform:translate(-2%,-2%) rotate(-1deg)}57%{transform:translate(2%,-7%) rotate(2deg)}}
+.sc-actor-return,.sc-actor-reach,.sc-actor-unzip,.sc-actor-peek,.sc-actor-ooze,.sc-actor-rise,.sc-actor-grow,.sc-actor-crack{animation:sc-emerge 6s ease-in-out infinite}
+@keyframes sc-emerge{0%,100%{transform:translate(2%,6%) scale(.96,.96)}51%,62%{transform:translate(-6%,-6%) scale(1.015,1.035)}}
+.sc-actor-flutter,.sc-actor-fly,.sc-actor-flutterBy{animation:sc-flutter 6.8s ease-in-out infinite;bottom:16%}
+@keyframes sc-flutter{0%,100%{transform:translate(3%,3%) rotate(5deg)}26%{transform:translate(-8%,-8%) rotate(-6deg)}56%{transform:translate(-15%,-3%) rotate(-2deg)}78%{transform:translate(-5%,-11%) rotate(3deg)}}
+.sc-actor-crawl,.sc-actor-coast,.sc-actor-conveyor,.sc-actor-brake,.sc-actor-escape,.sc-actor-roll,.sc-actor-pause{animation:sc-creep 8s ease-in-out infinite}
+.sc-actor-roll,.sc-actor-escape{animation:sc-roll 6.4s ease-in-out infinite}
+@keyframes sc-creep{0%,100%{transform:translateX(8%) scale(.99,1)}58%{transform:translateX(-14%) scale(1.02,.98)}}
+@keyframes sc-roll{0%,100%{transform:translateX(-12%) rotate(-14deg)}60%{transform:translateX(5%) rotate(10deg)}}
+.sc-actor-whisper{animation:sc-breathe 5s ease-in-out infinite}
+.sc-actor-plummet{animation:sc-plummet 7.5s ease-in-out infinite}
+@keyframes sc-plummet{0%,100%{transform:translateY(-10%) rotate(-3deg)}58%,70%{transform:translateY(3%) rotate(6deg)}}
+.sc-actor-swim{right:calc(3% + var(--i)*9%);bottom:calc(17% + var(--i)*14%);width:calc(32% - var(--i)*7%);height:calc(49% - var(--i)*9%);animation:sc-swim 7.5s ease-in-out infinite;animation-delay:var(--behind)}
+@keyframes sc-swim{0%,100%{transform:translate(4%,4%) scaleY(.98)}50%{transform:translate(-12%,-9%) scaleY(1.03) rotate(-3deg)}}
+.sc-actor-prints{right:calc(4% + var(--i)*7%);top:calc(3% + var(--i)*8%);height:24%;width:12%;animation:sc-print 6s ease-in-out infinite;animation-delay:var(--behind)}
+@keyframes sc-print{0%,100%{opacity:.25;transform:scale(.93) rotate(5deg)}45%,63%{opacity:.92;transform:scale(1) rotate(5deg)}}
+.sc-actor-march{right:calc(5% + var(--i)*9%);bottom:calc(8% + var(--i)*4%);width:15%;height:37%;animation:sc-march 1.7s ease-in-out infinite;animation-delay:var(--gait)}
+@keyframes sc-march{0%,100%{transform:translate(-2%,1%) rotate(-3deg)}50%{transform:translate(2%,-5%) rotate(3deg)}}
+
+/* A six-exposure walk cycle with independent timing and perspective for the
+   procession. Steps(1,end) keeps feet and beaks crisp between illustrations. */
+.sc-actor-ducks,.sc-mini .sc-actor-ducks{
+  width:calc(18% - var(--i)*1.25%); height:auto;aspect-ratio:1;
+  right:calc(2% + var(--i)*6.1%);bottom:calc(6% + var(--i)*5%);transform-origin:center bottom;
+  animation:sc-procession 11s linear infinite;animation-delay:var(--behind);
+  z-index:calc(7 - var(--i));
+}
+.sc-walking-duck {display:block;width:100%;height:100%;background:url("./art/scenery/duck-walk.webp") 0 50% / 600% 100% no-repeat;animation:sc-walk .89s steps(1,end) infinite;animation-delay:var(--gait)}
+@keyframes sc-walk{0%{background-position-x:0}16.67%{background-position-x:20%}33.33%{background-position-x:40%}50%{background-position-x:60%}66.67%{background-position-x:80%}83.33%,100%{background-position-x:100%}}
+@keyframes sc-procession{0%{transform:translateX(-43%);opacity:0}12%{opacity:1}83%{opacity:1}100%{transform:translateX(55%);opacity:0}}
+
+.sc-air{position:absolute;inset:0;overflow:hidden}
+.sc-detail{position:absolute;left:var(--x);top:var(--y);display:block;width:3px;height:3px;border-radius:50%;background:#ffe3a5;opacity:0;animation:sc-mote var(--tempo) ease-in-out infinite;animation-delay:var(--start)}
+@keyframes sc-mote{0%,100%{opacity:0;transform:translate(0,3px)}42%{opacity:.53}85%{opacity:.13;transform:translate(6px,-14px)}}
+.sc-air-moon .sc-detail,.sc-air-lamps .sc-detail,.sc-air-signals .sc-detail,.sc-air-candle .sc-detail{width:4px;height:4px;background:#ffdb88;box-shadow:0 0 7px 2px #ffd17599;animation-name:sc-signal;animation-duration:calc(var(--tempo) + 2s)}
+.sc-air-moon .sc-detail{width:2px;height:2px;box-shadow:0 0 4px #e7f4ff;background:#deebfb}
+@keyframes sc-signal{0%,100%{opacity:.08}43%{opacity:.85}70%{opacity:.24}}
+.sc-air-breeze .sc-detail,.sc-air-seeds .sc-detail,.sc-air-feathers .sc-detail,.sc-air-petals .sc-detail,.sc-air-leaves .sc-detail{width:6px;height:3px;border-radius:70% 5% 70% 5%;transform-origin:20% center;animation:sc-seed calc(var(--tempo) + 1s) linear infinite;animation-delay:var(--start)}
+.sc-air-leaves .sc-detail{background:#b2b05b}.sc-air-petals .sc-detail{background:#d8a6b4}.sc-air-breeze .sc-detail{background:#cbb084;width:4px}.sc-air-feathers .sc-detail{background:#f1e0c4;width:8px}
+@keyframes sc-seed{0%{opacity:0;transform:translate(-20px,-8px) rotate(-24deg)}19%{opacity:.67}60%{transform:translate(4px,6px) rotate(38deg)}100%{opacity:0;transform:translate(24px,19px) rotate(78deg)}}
+.sc-air-rain .sc-detail,.sc-air-drips .sc-detail,.sc-air-uprain .sc-detail{width:1px;height:12px;border-radius:80%;background:linear-gradient(transparent,#d3e9ec);animation:sc-rain 1.8s ease-in infinite;animation-delay:var(--start)}
+.sc-air-rain .sc-detail{height:16px;animation-duration:1.15s}
+.sc-air-drips .sc-detail{height:5px;width:2px;border-radius:50% 50% 45% 45%}
+.sc-air-uprain .sc-detail{animation-direction:reverse}
+@keyframes sc-rain{0%{opacity:0;transform:translate(5px,-55px) rotate(8deg)}28%{opacity:.6}100%{opacity:0;transform:translate(-5px,32px) rotate(8deg)}}
+.sc-air-steam .sc-detail,.sc-air-mist .sc-detail{width:14%;height:10%;filter:blur(7px);border-radius:50%;background:#e6e4c3;animation:sc-mist calc(var(--tempo) + 3s) ease-in-out infinite;animation-delay:var(--start)}
+@keyframes sc-mist{0%,100%{opacity:0;transform:translate(0,11%) scale(.75)}50%{opacity:.25}93%{transform:translate(12%,-65%) scale(1.2)}}
+.sc-air-bubbles .sc-detail,.sc-air-lights .sc-detail{width:5px;height:5px;border:1px solid #fff6bfad;background:radial-gradient(at 25% 25%,#fdfff1 5%,transparent 50%);animation:sc-bubble calc(var(--tempo) + .4s) ease-in-out infinite;animation-delay:var(--start)}
+.sc-air-lights .sc-detail,.sc-air-fireflydoor .sc-detail{background:#f9ef74;box-shadow:0 0 6px 2px #d2d95caa}
+@keyframes sc-bubble{0%,100%{opacity:0;transform:translate(0,12px) scale(.65)}24%{opacity:.65}80%{opacity:.38;transform:translate(6px,-17px) scale(1.1)}}
+.sc-air-glitter .sc-detail,.sc-air-shine .sc-detail{width:5px;height:5px;background:#ffe8ae;clip-path:polygon(50% 0,60% 39%,100% 50%,60% 61%,50% 100%,40% 61%,0 50%,40% 39%);border-radius:0}
+.sc-air-crumbs .sc-detail{width:3px;height:2px;background:#cfab6d}
+.sc-air-embers .sc-detail{background:#ffb256;box-shadow:0 0 4px #ffb566;animation-name:sc-bubble}
+.sc-air-ripple .sc-detail,.sc-air-echo .sc-detail{width:7%;height:2%;border:1px solid #e9dcaa99;border-radius:50%;background:transparent;animation:sc-ripple var(--tempo) ease-out infinite;animation-delay:var(--start)}
+.sc-air-echo .sc-detail{height:8%;border-right-color:transparent;border-left-color:transparent;transform:rotate(-60deg)}
+@keyframes sc-ripple{0%,100%{opacity:0;transform:scale(.5)}26%{opacity:.6}83%{opacity:0;transform:scale(1.65)}}
+.sc-air-slime .sc-detail{background:#c7ca6e;box-shadow:0 1px 3px #938941;width:3px;height:5px;animation:sc-rain 3.1s ease-in infinite;animation-delay:var(--start)}
+.sc-air-pawprints .sc-detail{width:5px;height:4px;background:#f4cc7a;box-shadow:-2px -2px 1px -1px #ffed9a,0 -3px 1px -1px #ffed9a,2px -2px 1px -1px #ffed9a,0 0 6px #ffeeb5;animation-name:sc-signal}
+.sc-air-fireflydoor .sc-detail{width:3px;height:3px;animation:sc-signal var(--tempo) ease-in-out infinite;animation-delay:var(--start)}
+@media(prefers-reduced-motion:reduce){
+  .sc-stage{transition:opacity .15s}
+  .sc-stage *,.sc-stage *::before,.sc-stage *::after{animation:none!important}
+  .sc-stage .sc-detail{opacity:.18}
+  .sc-stage .sc-actor-ducks{opacity:1}
+  .sc-stage .sc-walking-duck{background:url("./art/scenery/scene-22.webp") center bottom / contain no-repeat}
+}

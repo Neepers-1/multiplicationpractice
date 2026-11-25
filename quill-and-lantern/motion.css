@@ -1,0 +1,16 @@
+@view-transition { navigation: auto; }
+::view-transition-old(root) { animation: quill-away .22s ease-in both; }
+::view-transition-new(root) { animation: quill-appear .32s ease-out both; }
+@keyframes quill-away { to {opacity:0} }
+@keyframes quill-appear { from {opacity:0} }
+dialog[open] { animation:quill-appear .2s ease-out both }
+dialog[open]::backdrop { animation:quill-appear .22s ease-out both }
+button,a,summary { transition:color .18s ease,background-color .18s ease,border-color .18s ease,box-shadow .18s ease,filter .18s ease,opacity .18s ease }
+:is(#soundToggle,#musicToggle) {inline-size:36px;block-size:36px;flex-shrink:0;border:0;background:transparent;color:inherit;opacity:.84;display:inline-grid;place-items:center;cursor:pointer}
+:is(#soundToggle,#musicToggle) svg {inline-size:20px;block-size:20px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.5}
+#soundToggle[data-muted=true] .waves,#soundToggle:not([data-muted=true]) .mute-slash,#musicToggle:not([data-muted=true]) .music-slash {display:none}
+:is(#soundToggle,#musicToggle):is(:hover,:focus-visible) {opacity:1;color:#be914c}
+.mast #soundToggle {margin-inline-end:-.6rem}
+@media(max-width:560px){.mast :is(#soundToggle,#musicToggle) {inline-size:25px;margin-inline-end:0} .mast {column-gap:6px}}
+@media(prefers-reduced-motion:reduce) {::view-transition-old(root),::view-transition-new(root),dialog[open],dialog[open]::backdrop{animation-duration:.045s}}
+.scene-card .scene-card-art{display:block;position:relative;isolation:isolate;overflow:hidden;width:100%;height:clamp(82px,10vw,115px);margin:0 0 .55rem;background:#303c35}

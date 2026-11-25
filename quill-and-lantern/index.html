@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#263f37"><meta name="description" content="Build a narrative paragraph with sensory details, thoughts, and feelings in a hundred imaginative scenes.">
+<title>Writing Workshop · Quill &amp; Lantern</title>
+<link rel="preload" as="image" href="./art/enchanted/writing-quill.webp"><link rel="icon" href="./favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="./style.css">
+<link rel="stylesheet" href="./scenery.css"><link rel="stylesheet" href="./enchanted.css"><link rel="stylesheet" href="./motion.css">
+</head>
+<body class="at-desk">
+<a class="skip" href="#main">Skip to journal</a>
+<header class="topbar"><div class="frame mast">
+<a class="brand" href="#desk" aria-label="Quill and Lantern desk"><span id="brandmark"></span><span>Quill <i>&amp;</i> Lantern</span></a>
+<nav class="nav" aria-label="Main navigation"><a id="navWork" href="#workshop" aria-current="page"><i data-icon="quill"></i>Workshop</a><a id="navLibrary" href="#my-writing"><i data-icon="writing"></i>My writing</a><a href="./teacher.html" id="navTeacher" hidden><i data-icon="teacher"></i>Teacher</a></nav>
+<button id="musicToggle" type="button" aria-label="Background music" title="Play background music"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17V6l11-3v11M9 9l11-3"/><ellipse cx="6.5" cy="18" rx="2.7" ry="2"/><ellipse cx="17.5" cy="15" rx="2.7" ry="2"/><path class="music-slash" d="m3 3 18 18"/></svg></button>
+<button id="soundToggle" type="button" aria-label="Writing sounds" title="Writing sounds"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3z"/><path class="waves" d="M16 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/><path class="mute-slash" d="m16 9 5 6m0-6-5 6"/></svg></button>
+<button class="account" id="account"><i data-icon="user"></i><span id="accountLabel">Sign in</span></button>
+</div></header>
+<audio id="journalMusic" src="./audio/journal-opening.mp3" loop preload="metadata" hidden></audio>
+<main id="main">
+<section id="deskCover" class="desk-cover" aria-labelledby="coverTitle">
+<div class="desk-picture"></div><div class="desk-veil"></div>
+<div class="cover-title"><div class="cover-kicker"><span>✦</span> Narrative writing</div><h1 id="coverTitle">The writing<br><em>journal</em></h1></div>
+<button id="openJournal" class="book-target" aria-label="Open the writing journal"><span class="open-cue"><i data-icon="workshop"></i>Open journal</span></button>
+</section>
+<div id="workshop" hidden>
+<div class="journal-toolbar"><a href="#desk" class="desk-return"><i data-icon="lantern"></i>Back to desk</a><span class="toolbar-title">Writing workshop</span><a href="#my-writing" class="desk-return"><i data-icon="writing"></i>My writing</a></div>
+<div class="book-shell"><section class="book-spread" aria-label="Open writing journal"><div class="folio folio-left">
+<div class="folio-running scene-running"><span class="scene-kicker"><i data-icon="layers"></i><span id="heroGenre">Scary</span><span aria-hidden="true">·</span><span id="sceneNumber">Scene 01 / 100</span></span><button id="changeScene" class="scene-btn"><i data-icon="layers"></i>Change scene</button></div>
+<section id="sceneHero" class="scenehero" aria-labelledby="sceneTitle">
+<div class="hero-art" id="heroArt"></div><div class="hero-shade"></div>
+<div class="hero-body"><h1 id="sceneTitle">Scratching at the Window</h1><p id="scenePrompt">You were in bed one night when you heard a scratching sound outside your window. What happened next?</p></div></section>
+<section class="ingredients" aria-labelledby="ingredientsHead">
+<div class="deck-heading"><h2 id="ingredientsHead"><img src="./art/enchanted/narrative-magic.webp" width="980" height="121" alt="Narrative Magic"></h2><p>Which senses belong in this moment?</p></div>
+<div class="ingredients-row" id="palette"></div>
+</section>
+<aside class="starter-panel" id="starterPanel" aria-labelledby="starterHeading"><header class="panel-head"><h2 id="starterHeading"><img src="./art/enchanted/starter-scroll.webp" alt="Sentence Starters"></h2></header><div class="starter-body" id="starterBody"></div></aside>
+</div>
+<div class="folio folio-right manuscript" id="manuscript">
+<div class="folio-running"><i data-icon="quill"></i> The manuscript</div>
+<header class="panel-head"><div class="panel-title"><h2>Your paragraph</h2></div><span class="counter" id="wordCount">0 words</span></header>
+<div class="chip-zone" id="chipZone" aria-label="Narrative Magic in this paragraph"><div class="empty-drop"><i data-icon="plus"></i>Drop a sense here</div></div>
+<div class="page-lines"><label class="sr-only" for="editor">Your paragraph</label><textarea id="editor" maxlength="80000" spellcheck="true" placeholder="Begin your paragraph here…" aria-describedby="editorHelp"></textarea><span id="editorHelp" class="sr-only">Type freely, or add a sense, thought, or feeling and choose a sentence starter.</span></div>
+<div class="bottom-line"><button id="hintButton" class="text-button" aria-expanded="false"><i data-icon="bulb"></i>Give me a hint</button><span id="hintText" hidden></span></div>
+<div class="manuscript-foot"><span id="saveLabel" role="status">Practice draft</span><div class="share-tools"><button id="shareWall" class="text-button" type="button"><i data-icon="sparkle"></i><span>Share on projector</span></button><button id="removeWall" type="button" class="text-button" hidden>Remove from wall</button><button class="primary" id="finish"><i data-icon="check"></i><span>Send to teacher</span></button></div></div>
+</div>
+</section></div></div>
+<section id="writingShelf" class="shelf frame" hidden><div class="shelf-heading"><div><span class="kicker">Your notebook</span><h1>My writing</h1></div><a class="primary" href="#workshop"><i data-icon="quill"></i>Writing desk</a></div><p id="shelfInfo"></p><div id="draftList"></div></section>
+</main>
+<footer class="sitefoot frame"><span class="foot-rule"></span><i data-icon="quill"></i><span>Quill &amp; Lantern</span><span class="foot-rule"></span></footer>
+<div id="toast" class="toast" role="status"></div><div id="flight" aria-hidden="true"></div>
+<dialog id="modal"><div id="dialogBody"></div><button class="modal-close" aria-label="Close dialog" id="closeModal"><i data-icon="close"></i></button></dialog>
+<script type="module" src="./app.js"></script>
+</body></html>
