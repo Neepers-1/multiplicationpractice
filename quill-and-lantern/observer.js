@@ -1,5 +1,6 @@
 import {icon,logo} from './icons.js';
 import {request} from './notebook.js';
+import {addReviewControls,paintFont} from './wall-review.js';
 import {makeStars} from './wall-stars.js';
 import {fitNear,rotatingBoxes} from './wall-layout.js';
 import {createWallCamera,screens} from './wall-camera.js';
@@ -39,6 +40,7 @@ function showMessage(title,detail='',link=false) {
 function gate(signedIn=false) {
   camera.setActive(false);
   generation++;allowed=false;gotList=false;catalog=[];lastShown.clear();
+  for(const c of cards.values())c.dismissReview?.();
   cards.clear();pending.clear();wall.replaceChildren();
   showMessage(signedIn?'Open the projector account':'Sign in to the story wall',signedIn?'Sign out here, then sign in as observer.':'Use the observer account to display the class’s shared writing.',!signedIn);
   $('#leave').hidden=!signedIn;$('#fullscreen').hidden=true;connection.textContent='';
@@ -101,7 +103,7 @@ function queueLayout(){
 new ResizeObserver(queueLayout).observe(wall);
 function retire(c) {
   if(c.leaving)return;
-  c.leaving=true;c.gesture=null;c.el.classList.remove('visible');c.el.classList.add('leaving');
+  c.leaving=true;c.dismissReview?.();c.gesture=null;c.el.classList.remove('visible');c.el.classList.add('leaving');
   c.el.inert=true;
   setTimeout(()=>{if(cards.get(c.id)===c){cards.delete(c.id);c.el.remove();layout();tick()}},fadeTime());
 }
@@ -113,13 +115,15 @@ function paintPin(c) {
 }
 function applyState(c,state) {
   const wasPinned=!!c.pin;
+  c.fontStep=state.fontStep??0;paintFont(c);
   c.rating=state.rating;c.pin=state.pin;c.stars.set(c.rating);paintPin(c);
   if(wasPinned && !c.pin) {c.start=Date.now();c.manual=null}
   if(c.pin)c.manual=null;
 }
 function save(c, patch) {
+  if(c.moderating||c.leaving)return;
   editEpoch++;c.saving++;
-  applyState(c,{rating:c.rating,pin:c.pin,...patch});layout();
+  applyState(c,{rating:c.rating,pin:c.pin,fontStep:c.fontStep,...patch});layout();
   c.writes=c.writes.then(async()=>{
     if(!allowed||cards.get(c.id)!==c)return;
     const saved=await request('projector/'+c.id,'PUT',{version:c.version,...patch});
@@ -137,6 +141,25 @@ function save(c, patch) {
   });
 }
 
+async function moderate(c,action,note) {
+  if(!allowed || c.leaving || c.moderating)return {ok:false,message:'This paragraph has changed.'};
+  c.moderating=true;editEpoch++;
+  try {
+    await c.writes;
+    if(!allowed || c.leaving || cards.get(c.id)!==c)return {ok:false,message:'This paragraph has changed.'};
+    await request('projector/'+c.id,'PUT',{version:c.version,action,note});
+    if(cards.get(c.id)===c){
+      catalog=catalog.filter(entry=>key(entry)!==c.key);
+      retire(c);tick();
+    }
+    return {ok:true};
+  }catch(e){
+    if(e.status===401 || e.status===403)gate(e.status===403);
+    if(e.status===409)void refresh();
+    connection.textContent=e.message||'The wall could not save this change. Try again.';
+    return {ok:false,message:connection.textContent};
+  }finally{c.moderating=false;editEpoch++}
+}
 function adjust(c,original,dx,dy,resizing) {
   const minW=Math.min(.94,170/wall.clientWidth),minH=Math.min(.9,106/wall.clientHeight);
   const candidate=resizing?{...original,w:Math.min(1-original.x,Math.max(minW,original.w+dx)),h:Math.min(1-original.y,Math.max(minH,original.h+dy))}:
@@ -227,10 +250,11 @@ function mount(story) {
   viewport.setAttribute('aria-label', 'Paragraph by '+story.username);
   viewport.querySelector('.ink').textContent=story.response;
   const now=Date.now(),k=key(story);
-  const c={el,id:story.id,key:k,version:story.version,start:now+fadeTime(),pin:story.pin,rating:story.rating,confirmed:{pin:story.pin,rating:story.rating},writes:Promise.resolve(),saving:0};
+  const c={el,id:story.id,key:k,version:story.version,start:now+fadeTime(),pin:story.pin,rating:story.rating,fontStep:story.fontStep??0,confirmed:{pin:story.pin,rating:story.rating,fontStep:story.fontStep??0},writes:Promise.resolve(),saving:0};
   c.stars=makeStars(story.username,c.rating,rating=>save(c,{rating}));
   el.querySelector('.wall-tools').prepend(c.stars.element);
   el.querySelector('.wall-pin').onclick=()=>{if(c.box && !c.leaving)save(c,{pin:c.pin?null:{...c.box}})};
+  addReviewControls(c,story,save,moderate);paintFont(c);
   addHandles(c);paintPin(c);cards.set(c.id,c);wall.append(el);layout();lastShown.set(k,now);
   viewport.addEventListener('scroll',()=>{if(!c.pin)c.start=Date.now()}, {passive:true});
   el.getBoundingClientRect();el.classList.add('visible');
@@ -253,11 +277,11 @@ function tick(){
   for(const c of cards.values()){
     if(c.leaving)continue;
     if(!catalog.some(item=>key(item)===c.key)){retire(c);continue}
-    if(!c.pin && !c.el.hidden && !c.saving && !c.gesture && now>=c.start+lifetime){retire(c);continue}
+    if(!c.pin && !c.el.hidden && !c.reviewOpen && !c.moderating && !c.saving && !c.gesture && now>=c.start+lifetime){retire(c);continue}
     if(!c.pin)playing.push(c);
   }
   if(playing.length>limit()){
-    const extra=playing.filter(c=>!c.gesture && !c.saving).sort((a,b)=>a.start-b.start).slice(0,playing.length-limit());
+    const extra=playing.filter(c=>!c.reviewOpen && !c.moderating && !c.gesture && !c.saving).sort((a,b)=>a.start-b.start).slice(0,playing.length-limit());
     extra.forEach(retire);
   }
   if(!catalog.length){if(!cards.size)showMessage('Waiting for the first story','In your journal, choose “Share on projector” to add your paragraph.');return}
@@ -281,7 +305,7 @@ async function refresh() {
     for(const entry of catalog){
       const c=cards.get(entry.id);
       if(c && c.key===key(entry) && !c.saving && !c.gesture){
-        c.confirmed={pin:entry.pin,rating:entry.rating};applyState(c,c.confirmed);
+        c.confirmed={pin:entry.pin,rating:entry.rating,fontStep:entry.fontStep??0};applyState(c,c.confirmed);
       }
     }
     layout();tick();

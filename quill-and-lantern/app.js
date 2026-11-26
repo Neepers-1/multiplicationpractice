@@ -2,6 +2,7 @@ import {classConnected} from './classroom.js';
 import {scenes,lenses} from './content.js';
 import {icon,logo} from './icons.js';
 import {Notebook,request} from './notebook.js';
+import {watchReviews} from './student-reviews.js';
 import {flyInk,stopInk,finishFlight,writeTypedInk} from './ink.js';
 import {bindJournalMusic} from './journal-music.js';
 import {bindQuillSound} from './quill-sound.js';
@@ -21,6 +22,9 @@ let activeLens='',tier=0,shownDoc=null,toastTime,opening=false,hashSeen=null,rea
 const sessionChanges=typeof BroadcastChannel==='function'?new BroadcastChannel('quill-account'):null;
 sessionChanges?.addEventListener('message',()=>{if(notebook.doc)notebook.persist();location.reload()});
 const notebook=new Notebook(update,notice);
+const reviews=watchReviews(notebook,request,()=>{
+  if(notebook.doc){status();if(hashSeen==='library')renderShelf()}
+});
 function notice(message){const n=$('#toast');n.textContent=message;n.classList.add('show');clearTimeout(toastTime);toastTime=setTimeout(()=>n.classList.remove('show'),5100)}
 function renderIcons(root=document){root.querySelectorAll('[data-icon]').forEach(el=>el.outerHTML=icon(el.dataset.icon))}
 renderIcons();$('#brandmark').innerHTML=logo;
@@ -132,6 +136,7 @@ $('#hintButton').onclick=()=>{
 async function sendToTeacher() {
   const d=notebook.doc;
   if(!d || sending)return;
+  if(reviews.get(d.id)?.state==='returned')return shareWall('revise');
   if(!d.text.trim()){editor.focus();notice('Write a little of your paragraph first.');return}
   if(!notebook.user || notebook.locked){signIn(true);return}
   if(d.sentAt && d.sentText===d.text){notice('Your teacher already has this version.');return}
@@ -152,23 +157,27 @@ async function sendToTeacher() {
 async function shareWall(action='share') {
   const d=notebook.doc;
   if (!d || sharing) return;
-  if (action==='share' && !d.text.trim()){editor.focus();notice('Write a little of your paragraph first.');return}
-  if (!notebook.user || notebook.locked){signIn(action==='share'?'projector':false);return}
+  const feedback=reviews.get(d.id);
+  if(action==='share' && feedback?.state==='returned')action='revise';
+  const publishing=action!=='withdraw';
+  if(action==='revise' && !feedback)return;
+  if (publishing && !d.text.trim()){editor.focus();notice('Write a little of your paragraph first.');return}
+  if (!notebook.user || notebook.locked){signIn(publishing?'projector':false);return}
   const owner=notebook.owner, intendedText=d.text, intendedLenses=JSON.stringify(d.lenses);
   sharing=true;status();
   try {
-    if(action==='share'){
+    if(publishing){
       if (!await notebook.flush() || d.dirty) throw Error('Your paragraph is waiting to save. Try sharing again in a moment.');
       if (d.text!==intendedText || JSON.stringify(d.lenses)!==intendedLenses) throw Error('Your paragraph changed. Share it again when you are ready.');
     }
     if (owner!==notebook.owner || d!==notebook.doc) return;
-    const receipt=await request('projection-share/'+d.id,'POST',{owner,action,version:action==='share'?d.version:d.sharedVersion});
+    const receipt=await request('projection-share/'+d.id,'POST',{owner,action,version:publishing?d.version:d.sharedVersion,returnedVersion:action==='revise'?feedback.version:undefined});
     if (owner!==notebook.owner) return;
-    if (action==='share') Object.assign(d,receipt);
+    if (publishing) {Object.assign(d,receipt);reviews.clear(d.id)}
     else Object.assign(d,{sharedVersion:null,sharedText:null,sharedLenses:[]});
     notebook.persist();
-    notice(action==='share'?'Shared on the class story wall.':'Removed from the class story wall.');
-  } catch(error){notice(error.message)}
+    notice(action==='revise'?'Revision sent to your teacher and shared on the story wall.':action==='share'?'Shared on the class story wall.':'Removed from the class story wall.');
+  } catch(error){notice(error.message);void reviews.refresh()}
   finally {sharing=false;status()}
 }
 $('#shareWall').onclick=()=>shareWall();
@@ -176,16 +185,19 @@ $('#removeWall').onclick=()=>shareWall('withdraw');
 $('#finish').onclick=sendToTeacher;
 function status(){
   const d=notebook.doc;if(!d)return;
-  const shared=d.sharedVersion && d.text===d.sharedText && JSON.stringify(d.lenses)===JSON.stringify(d.sharedLenses);
-  const wallLabel=sharing?'Updating…':shared?'Shared on projector':d.sharedVersion?'Update projector':'Share on projector';
+  reviews.track();
+  const feedback=reviews.get(d.id);
+  const returned=feedback?.state==='returned', unchanged=feedback && d.version<=feedback.version && !d.dirty;
+  const shared=!feedback && d.sharedVersion && d.text===d.sharedText && JSON.stringify(d.lenses)===JSON.stringify(d.sharedLenses);
+  const wallLabel=sharing?'Updating…':feedback?.state==='closed'&&unchanged?'Closed on projector':shared?'Shared on projector':!feedback&&d.sharedVersion?'Update projector':'Share on projector';
   const wall=$('#shareWall');
   if(wall.dataset.label!==wallLabel){wall.dataset.label=wallLabel;wall.innerHTML=labeled(shared?'check':'sparkle',wallLabel);reveal(wall,150)}
-  wall.disabled=Boolean(shared||sharing);$('#removeWall').hidden=!d.sharedVersion;$('#removeWall').disabled=sharing;
+  wall.hidden=returned;wall.disabled=Boolean(shared||sharing||unchanged);$('#removeWall').hidden=Boolean(feedback)||!d.sharedVersion;$('#removeWall').disabled=sharing;
   const words=count(d.text);$('#wordCount').textContent=words+' '+(words===1?'word':'words');
   const sent=d.sentAt && d.sentText===d.text;
-  const button=$('#finish'),label=sending?'Sending…':sent?'Sent to teacher':'Send to teacher';
-  if(button.dataset.label!==label){button.dataset.label=label;button.innerHTML=labeled(sent?'check':'quill',label);reveal(button,150)}
-  button.disabled=Boolean(sent||sending);
+  const button=$('#finish'),label=returned?(sharing?'Sending…':'Send revision back'):sending?'Sending…':sent?'Sent to teacher':'Send to teacher';
+  if(button.dataset.label!==label){button.dataset.label=label;button.innerHTML=labeled(sent&&!returned?'check':'quill',label);reveal(button,150)}
+  button.disabled=returned?Boolean(unchanged||sharing||!d.text.trim()):Boolean(sent||sending);
   $('#saveLabel').textContent=notebook.user?(notebook.problem||(d.dirty?'Saving…':d.sentAt&&!sent?'Updated since you sent it':d.version?'Saved to My writing':'New paragraph')):'Practice · saved in this tab';
 }
 function update(part){if(!notebook.doc)return;if(part==='status'){status();if(hashSeen==='library')renderShelf();return}
@@ -232,9 +244,9 @@ function chooseScene(){let genre='All',term='';const genres=['All','Silly','Fant
   $('#surprise').onclick=()=>{let list=filtered();if(list.length>1)list=list.filter(s=>s.id!==notebook.doc.sceneId);if(list.length)select(list[Math.floor(Math.random()*list.length)].id)};show();
 }
 $('#changeScene').onclick=chooseScene;
-function renderShelf(){const list=[...notebook.docs.values()].filter(d=>isMeaningful(d)||d.version).sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)));
+function renderShelf(){const list=[...notebook.docs.values()].filter(d=>isMeaningful(d)||d.version).sort((a,b)=>Number(reviews.get(b.id)?.state==='returned')-Number(reviews.get(a.id)?.state==='returned') || String(b.updatedAt).localeCompare(String(a.updatedAt)));
   $('#shelfInfo').textContent=notebook.user?(notebook.problem||notebook.user.name+'’s saved paragraphs.'):'Practice writing stays in this tab. Sign in to use your notebook across devices.';
-  $('#draftList').innerHTML=(list.length?'<div class="draft-grid">'+list.map(d=>{const scene=byId.get(d.sceneId);return '<button class="draft-card" data-doc="'+escape(d.id)+'"><small>'+escape(d.sentAt?(d.sentText===d.text?'Sent to teacher':'Revised since sending'):d.status==='finished'?'Finished':'Draft')+' · '+escape(scene?.genre)+'</small><h3>'+escape(scene?.title||'Scene')+'</h3><p>'+escape(d.text.trim().slice(0,130)||'Ingredients chosen')+'</p><small class="draft-date">'+count(d.text)+' words · '+escape(fmt(d.updatedAt))+'</small></button>'}).join('')+'</div>':'<div class="empty-shelf">'+icon('writing')+'<h3>Your notebook is ready</h3><p>Your paragraphs will appear here as you write.</p></div>')+'<div class="dialog-actions"><button class="outline" id="newParagraph">'+labeled('plus','New paragraph')+'</button>'+(!notebook.user?'<button class="primary" id="shelfSign">'+labeled('user','Sign in')+'</button>':'')+'</div>';
+  $('#draftList').innerHTML=(list.length?'<div class="draft-grid">'+list.map(d=>{const scene=byId.get(d.sceneId);return '<button class="draft-card" data-doc="'+escape(d.id)+'"><small>'+escape(reviews.get(d.id)?.state==='returned'?'Teacher note · Revise':d.sentAt?(d.sentText===d.text?'Sent to teacher':'Revised since sending'):d.status==='finished'?'Finished':'Draft')+' · '+escape(scene?.genre)+'</small><h3>'+escape(scene?.title||'Scene')+'</h3><p>'+escape(d.text.trim().slice(0,130)||'Ingredients chosen')+'</p><small class="draft-date">'+count(d.text)+' words · '+escape(fmt(d.updatedAt))+'</small></button>'}).join('')+'</div>':'<div class="empty-shelf">'+icon('writing')+'<h3>Your notebook is ready</h3><p>Your paragraphs will appear here as you write.</p></div>')+'<div class="dialog-actions"><button class="outline" id="newParagraph">'+labeled('plus','New paragraph')+'</button>'+(!notebook.user?'<button class="primary" id="shelfSign">'+labeled('user','Sign in')+'</button>':'')+'</div>';
   $('#newParagraph').onclick=chooseScene;if($('#shelfSign'))$('#shelfSign').onclick=signIn;
 }
 $('#draftList').addEventListener('click',e=>{const b=e.target.closest('[data-doc]');if(b){notebook.open(b.dataset.doc);location.hash='workshop'}});

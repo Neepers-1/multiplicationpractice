@@ -124,3 +124,37 @@ h2{font:400 clamp(31px,4.2vw,75px)/1.15 var(--hand);margin:12px 0 8px;color:#ffe
   nav{gap:3px}
   nav button{font-size:12px;padding:7px 8px}
 }
+.story .ink{font-size:clamp(13px,calc(var(--ink-size,32px) * var(--font-factor,1)),84px);transition:font-size .18s ease}
+.story .wall-tools{padding-right:20px}
+.story .wall-close{position:absolute;top:2px;right:2px}
+.story .wall-review-control{
+  display:grid;place-items:center;flex:none;width:24px;height:26px;padding:4px;
+  color:var(--gold);background:transparent;border:0;border-radius:4px;cursor:pointer;
+  transition:color .18s,background .18s,opacity .18s;
+}
+.wall-review-control svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:1.8}
+.story .wall-review-control:is(:hover,:focus-visible){color:#fff1cf;background:#9074474d}
+.story .wall-review-control:disabled{opacity:.35;cursor:default}
+.story .wall-close:hover{color:#ffbbac}
+@container(max-width:370px){
+  .story .wall-tools{gap:1px}
+  .wall-review-control{max-width:21px}
+}
+@container(max-width:295px){
+  .wall-tools{flex-wrap:wrap;justify-content:flex-end}
+  .wall-tools .wall-stars{margin-right:auto}
+  .wall-tools .wall-pin{margin-left:0}
+}
+.wall-return-dialog{width:min(420px,92vw);border:1px solid #a98a50;border-radius:12px;padding:23px;color:var(--ivory);background:#172333;box-shadow:0 15px 70px #0009}
+.wall-return-dialog[open]{animation:note-appear .2s ease-out}
+.wall-return-dialog::backdrop{background:#050a14aa}
+.wall-return-dialog h2{margin:0;font:normal 30px/1.2 var(--hand)}
+.wall-return-dialog p,.wall-return-dialog label,.wall-return-dialog button,.wall-return-dialog textarea{font:15px/1.45 system-ui,sans-serif}
+.wall-return-dialog .recipient{margin:3px 0 18px;color:var(--gold)}
+.wall-return-dialog textarea{display:block;width:100%;resize:vertical;margin-top:7px;padding:9px;border:1px solid #8f7954;border-radius:5px;background:#0e1725;color:var(--ivory)}
+.wall-return-dialog footer{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}
+.wall-return-dialog button{padding:6px 14px;border-radius:5px;border:1px solid #a98a50;background:var(--gold);color:#151b23;cursor:pointer}
+.wall-return-dialog .cancel{background:transparent;color:var(--ivory)}
+.wall-return-dialog .review-error{color:#ffc4ad;margin:5px 0}
+@keyframes note-appear{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.wall-return-dialog[open]{animation:none}.story .ink{transition:none}}
