@@ -34,9 +34,17 @@ main{position:relative;min-height:0;flex:1;margin:clamp(6px,1.5vh,24px) clamp(15
 blockquote{position:relative;margin:0;padding:0 clamp(18px,2.0vw,38px);min-height:0}
 .quotesign{position:absolute;font:400 clamp(38px,4.2vw,85px)/.85 Georgia,serif;color:#e1be79;opacity:.85;pointer-events:none}
 .quotesign.open{top:0;left:-.08em}.quotesign.close{right:-.04em;bottom:-.17em}
-.window{min-height:0;overflow:hidden;transition:opacity .48s ease}.window.turning{opacity:0}
-.ink{font:400 clamp(26px,2.1vw,46px)/1.22 var(--hand);font-kerning:normal;color:#fff3da;overflow-wrap:anywhere;white-space:pre-wrap;column-count:1;column-gap:32px;column-fill:auto}
-.folio{font:500 clamp(11px,.85vw,15px)/1.2 system-ui,sans-serif;letter-spacing:.12em;color:#e5cd9a;margin:5px 0 0;padding-left:clamp(18px,2vw,38px)}
+.window{
+  min-height:0;
+  overflow-x:hidden;
+  overflow-y:auto;
+  overscroll-behavior-y:contain;
+  touch-action:pan-y pinch-zoom;
+  user-select:text;
+  scrollbar-color:#d9bd88 #233040;
+}
+.window:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:2px}
+.ink{font:400 clamp(26px,2.1vw,46px)/1.22 var(--hand);font-kerning:normal;color:#fff3da;overflow-wrap:anywhere;white-space:pre-wrap}
 #message{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;text-shadow:0 2px 16px #06101d;opacity:1;transition:opacity .75s;pointer-events:none;padding:15px}
 #message.quiet{opacity:0}#message a{pointer-events:auto;margin-top:9px}
 .empty-mark svg{width:clamp(37px,4vw,64px);height:clamp(37px,4vw,64px);stroke:#e9c786;filter:drop-shadow(0 0 12px #dbb36952);stroke-width:1}
@@ -45,12 +53,12 @@ h2{font:400 clamp(31px,4.2vw,75px)/1.15 var(--hand);margin:12px 0 8px;color:#ffe
 #connection{position:absolute;bottom:6px;left:16px;color:#ead9af;font:12px system-ui,sans-serif}
 @media(max-width:680px){header{grid-template-columns:1fr auto;gap:8px;padding:15px 16px 0}.brand{display:none}.title{justify-self:start}.title .rule:first-child{display:none}main{margin:12px 12px 16px}.ink{font-size:clamp(23px,4.8vw,30px)}.byline{font-size:14px}}
 @media(max-height:480px){header{padding-top:5px}h1{font-size:30px}main{margin-top:3px;margin-bottom:7px}.ink{font-size:24px}}
-@media(prefers-reduced-motion:reduce){.lamplight,#motes i{animation:none}.story,.story.visible,.story.leaving{transform:none}.story,.window,#message{transition-duration:.12s}}
+@media(prefers-reduced-motion:reduce){.lamplight,#motes i{animation:none}.story,.story.visible,.story.leaving{transform:none}.story,#message{transition-duration:.12s}}
 
 /* Each quote owns its rectangle on the projector. Its controls travel with it. */
 #wall{display:block}
 .story{
-  inset:auto;box-sizing:border-box;overflow:hidden;touch-action:none;user-select:none;
+  inset:auto;box-sizing:border-box;overflow:hidden;user-select:none;
   padding:5px clamp(9px,1.1vw,21px) 12px;outline:1px solid transparent;border-radius:8px;
   transition:opacity 1.6s ease,transform 1.6s ease,outline-color .25s,background-color .25s;
 }
@@ -59,9 +67,9 @@ h2{font:400 clamp(31px,4.2vw,75px)/1.15 var(--hand);margin:12px 0 8px;color:#ffe
 .story.is-moving{outline-color:#f2ce80b3;z-index:3;cursor:grabbing}
 .story.leaving{pointer-events:none}
 .story .wall-tools{display:flex;align-items:center;gap:5px;min-width:0;flex:0 0 auto}
-.story .byline{margin:1px 0 4px;min-height:14px;font-size:clamp(12px,.96vw,17px)}
+.story .byline{flex:none;touch-action:none;margin:1px 0 4px;min-height:14px;font-size:clamp(12px,.96vw,17px)}
 .story .ink{font-size:var(--ink-size,32px);line-height:1.24}
-.story blockquote{padding-inline:clamp(14px,1.6vw,30px)}
+.story blockquote{display:flex;flex-direction:column;padding-inline:clamp(14px,1.6vw,30px)}
 .story .quotesign{font-size:calc(var(--ink-size,32px)*1.7)}
 .story .wall-pin,.story .wall-move,.story .wall-resize{
   display:grid;place-items:center;width:27px;height:26px;flex:0 0 auto;
@@ -71,6 +79,7 @@ h2{font:400 clamp(31px,4.2vw,75px)/1.15 var(--hand);margin:12px 0 8px;color:#ffe
 .story .wall-pin{margin-left:auto}
 .story .wall-pin[aria-pressed=true]{color:#ffda81;opacity:1;background:#c09a5036}
 .story .wall-pin[aria-pressed=true] svg{fill:#e5bc5f73}
+.story .wall-move,.story .wall-resize{touch-action:none}
 .story .wall-move{cursor:grab}
 .story .wall-resize{position:absolute;right:1px;bottom:1px;cursor:nwse-resize}
 .story .wall-pin svg,.story .wall-move svg,.story .wall-resize svg{
@@ -79,7 +88,6 @@ h2{font:400 clamp(31px,4.2vw,75px)/1.15 var(--hand);margin:12px 0 8px;color:#ffe
 }
 .story :is(.wall-pin,.wall-move,.wall-resize):is(:hover,:focus-visible){opacity:1;color:#ffe1a2;background:#9074474d}
 .story button:focus-visible{outline:2px solid #ffe2a2;outline-offset:1px}
-.story .folio{margin-top:1px;font-size:11px}
 @media(prefers-reduced-motion:reduce){.story{transition-duration:.12s}}
 
 .story{container-type:inline-size}
@@ -87,4 +95,32 @@ h2{font:400 clamp(31px,4.2vw,75px)/1.15 var(--hand);margin:12px 0 8px;color:#ffe
   .wall-tools{gap:1px!important}
   .wall-tools .wall-star{width:19px;height:23px;padding:2px}
   .wall-tools .wall-pin,.wall-tools .wall-move{width:22px;height:23px}
+}
+
+/* The display controls stay fixed while the camera moves over the story wall. */
+.wall-viewport{position:absolute;inset:0 0 22px;overflow:clip;border-radius:8px}
+.wall-viewport:focus-visible{outline:1px solid var(--gold);outline-offset:2px}
+.wall-viewport #wall{
+  inset:0 auto auto 0;width:var(--wall-span);height:var(--wall-span);
+  transform-origin:top left;pointer-events:none;
+}
+.wall-viewport .story{pointer-events:none}
+.wall-viewport .story :is(.wall-tools,.byline,.window,.wall-resize){pointer-events:auto}
+.wall-viewport .story.leaving{pointer-events:none}
+.wall-background,.wall-map{position:absolute;inset:0}
+.wall-background{cursor:grab;touch-action:none}
+.wall-background.dragging{cursor:grabbing}
+.wall-map{width:100%;height:100%;background:transparent;border:0;cursor:zoom-in}
+.wall-map:focus-visible{outline:2px solid var(--gold);outline-offset:-3px}
+.wall-hint{
+  position:absolute;bottom:0;left:0;color:#eadbbd;font:12px/1.4 system-ui,sans-serif;
+  text-shadow:0 1px 6px #06101e;pointer-events:none;
+}
+@media(max-width:500px){
+  header{gap:4px;padding-inline:10px}
+  .title{gap:0}
+  .title .rule{display:none}
+  h1{font-size:clamp(22px,6.3vw,31px)}
+  nav{gap:3px}
+  nav button{font-size:12px;padding:7px 8px}
 }

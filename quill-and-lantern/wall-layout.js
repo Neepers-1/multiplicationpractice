@@ -38,12 +38,15 @@ export function fitNear(box, fixed, gap, resizing=false) {
   return candidates.sort((a,b)=>a.score-b.score)[0]?.box;
 }
 
-export function rotatingBoxes(fixed,width,height,count) {
+export function rotatingBoxes(fixed,width,height,count,screens=1) {
   if (!count || !width || !height) return [];
-  const gap={x:8/width,y:8/height};
+  const gap={x:16/width,y:16/height};
   const available=freeAreas(fixed,gap);
-  const cols=width>=760?2:1, rows=height>=460?2:1;
-  const baseW=1/cols-.024, baseH=1/rows-.032;
+  const viewWidth=width/screens, viewHeight=height/screens;
+  const cols=screens*(viewWidth>=850?2:1);
+  const rows=screens*(viewHeight>=545 && viewWidth>=410?2:1);
+  const baseW=1/cols-.028/screens, baseH=1/rows-.035/screens;
+  const section=area=>Math.floor((area.y+.02/screens)*screens)*screens+Math.floor((area.x+.02/screens)*screens);
   let best=[];
   for (let i=0;i<=25;i++) {
     const scale=1-i*.029;
@@ -52,7 +55,7 @@ export function rotatingBoxes(fixed,width,height,count) {
     let areas=available, boxes=[];
     for (let n=0;n<count;n++) {
       const fits=areas.filter(a=>a.w>=w && a.h>=h)
-        .sort((a,b)=>(a.y-b.y)|| (a.x-b.x));
+        .sort((a,b)=>section(a)-section(b) || a.y-b.y || a.x-b.x);
       if (!fits.length) break;
       const a=fits[0], box={x:a.x,y:a.y,w,h};
       boxes.push(box);
